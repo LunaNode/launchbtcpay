@@ -1,0 +1,9 @@
+This is the code for btcpayserver launcher at https://launchbtcpay.lunanode.com
+
+To run, simply:
+
+	go run main.go
+
+When a user requests to provision a VM, the webserver will read run.sh and
+replace parameters with user-specified configuration. The resulting script will
+be passed as a startup script to the VM, via cloud-init.
