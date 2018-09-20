@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+		<link rel="stylesheet" href="style.css">
+		<link href="iconic/css/iconic.css" rel="stylesheet">
+
+		<title>Launch BTCPayServer on LunaNode</title>
+	</head>
+	<body>
+		<div class="container">
+			<h2>Launch BTCPayServer on LunaNode</h2>
+			<div id="errorbar" class="alert alert-danger" style="display:none"></div>
+			<div id="step1" class="stepdiv">
+				<p>This tool will create an m.2 VM with a 80 GB volume (total monthly price: $8.80).</p>
+				<p>To get started, enter your API key details below. You'll need to first <a href="https://dynamic.lunanode.com/panel/api">create an API key</a>.</p>
+				<form id="step1_form">
+					<div class="form-group row">
+						<label for="api_id" class="col-sm-2 col-form-label">API ID</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="api_id">
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="api_key" class="col-sm-2 col-form-label">API Key</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="api_key">
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="offset-sm-2 col-sm-10">
+							<button type="submit" class="btn btn-primary">Continue</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div id="step2" class="stepdiv" style="display:none">
+				<p>The following IP address has been reserved on your account: <strong id="step2_ip"></strong>.</p>
+				<p>Please point your hostname to this IP, and then enter the hostname below.</p>
+				<form id="step2_form">
+					<div class="form-group row">
+						<label for="hostname" class="col-sm-2 col-form-label">Hostname</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="hostname" placeholder="e.g. btcpay.example.com">
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="offset-sm-2 col-sm-10">
+							<button type="submit" class="btn btn-primary">Continue</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div id="step3" class="stepdiv" style="display:none">
+				<p>Almost there! Just need a few final details before provisioning your VM:</p>
+				<form id="step3_form">
+					<div class="form-group row">
+						<label for="sshkey" class="col-sm-2 col-form-label">SSH Key (optional)</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="sshkey" placeholder="e.g. ssh-rsa AAAA... x@y">
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="email" class="col-sm-2 col-form-label">E-mail Address (optional)</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="email">
+							<small id="emailHelp" class="form-text text-muted">This will be used by Let's Encrypt to notify you about certificate expiration.</small>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="network" class="col-sm-2 col-form-label">Network</label>
+						<div class="col-sm-10">
+							<select class="form-control" id="network">
+								<option value="mainnet">mainnet</option>
+								<option value="testnet">testnet</option>
+								<option value="regtest">regtest</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="crypto1" class="col-sm-2 col-form-label">Supported Crypto #1</label>
+						<div class="col-sm-10">
+							<select class="form-control" id="crypto1">
+								<option value="btc" selected>btc</option>
+								<option value="ltc">ltc</option>
+								<option value="grs">grs</option>
+								<option value="btg">btg</option>
+								<option value="ftc">ftc</option>
+								<option value="via">via</option>
+								<option value="">None</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="crypto2" class="col-sm-2 col-form-label">Supported Crypto #2</label>
+						<div class="col-sm-10">
+							<select class="form-control" id="crypto2">
+								<option value="btc">btc</option>
+								<option value="ltc">ltc</option>
+								<option value="grs">grs</option>
+								<option value="btg">btg</option>
+								<option value="ftc">ftc</option>
+								<option value="via">via</option>
+								<option value="" selected>None</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="lightning" class="col-sm-2 col-form-label">Lightning Implementation</label>
+						<div class="col-sm-10">
+							<select class="form-control" id="lightning">
+								<option value="" selected>None</option>
+								<option value="clightning">clightning</option>
+								<option value="lnd">lnd</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="alias" class="col-sm-2 col-form-label">Lightning Alias (optional)</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="alias">
+							<small id="emailHelp" class="form-text text-muted">Public alias of your lightning node.</small>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="repository" class="col-sm-2 col-form-label">Repository</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="repository" value="https://github.com/btcpayserver/btcpayserver-docker">
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="branch" class="col-sm-2 col-form-label">Branch</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="branch" value="master">
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="offset-sm-2 col-sm-10">
+							<button type="submit" class="btn btn-primary">Launch VM</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div id="step4" class="stepdiv" style="display:none">
+				<p>Your VM has launched successfully! Wait a minute, then go to <a id="step4_hostname" href=""></a>.</p>
+			</div>
+			<div id="loading" class="stepdiv" style="display:none">
+				<img src="loading.gif" width="200px" height="200px" />
+			</div>
+			<div id="loading2" class="stepdiv" style="display:none">
+				<p>This may take one or two minutes, please be patient...</p>
+				<img src="loading.gif" width="200px" height="200px" />
+			</div>
+		</div>
+
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+		<script src="index.js?version=3"></script>
+	</body>
+</html>

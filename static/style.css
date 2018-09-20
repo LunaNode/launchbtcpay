@@ -1,0 +1,12 @@
+body {
+	background-color: #F5F7FA;
+}
+
+.container {
+	margin-top: 25px;
+	max-width: 700px;
+}
+
+#loading, #loading2 {
+	text-align: center;
+}
