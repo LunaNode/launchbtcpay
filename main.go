@@ -17,7 +17,6 @@ import (
 )
 
 const IMAGE_ID = 121428
-const PLAN_ID = 87
 
 type ErrorResponse struct {
 	Error string `json:"error"`
@@ -116,6 +115,8 @@ func main() {
 		alias := r.PostForm.Get("alias")
 		repository := r.PostForm.Get("repository")
 		branch := r.PostForm.Get("branch")
+		plan := r.PostForm.Get("plan")
+		storage := r.PostForm.Get("storage")
 
 		remoteIP := r.RemoteAddr
 
@@ -138,12 +139,12 @@ func main() {
 		}
 
 		// create volume
-		log.Printf("[%s] creating volume", remoteIP)
+		log.Printf("[%s] creating volume (hostname: %s, crypto1: %s, crypto2: %s, plan: %s, storage: %s)", remoteIP, hostname, crypto1, crypto2, plan, storage)
 		var createResponse LunaVolumeCreate
 		err := request(apiID, apiKey, "volume", "create", map[string]string{
 			"region": "toronto",
 			"label": hostname,
-			"size": "80",
+			"size": storage,
 			"image": strconv.Itoa(IMAGE_ID),
 		}, &createResponse)
 		if err != nil {
@@ -183,7 +184,7 @@ func main() {
 		params := map[string]string{
 			"hostname": hostname,
 			"region": "toronto",
-			"plan_id": strconv.Itoa(PLAN_ID),
+			"plan_id": plan,
 			"volume_id": createResponse.VolumeID,
 			"volume_virtio": "yes",
 			"ip": ip,

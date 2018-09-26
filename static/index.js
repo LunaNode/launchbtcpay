@@ -3,6 +3,7 @@ $(document).ready(function() {
 	var apiKey = null;
 	var ip = null;
 	var hostname = null;
+	var autoStorage = true; // autoset storage unless user edited it
 
 	function showError(msg) {
 		$('#errorbar').text(msg);
@@ -13,6 +14,11 @@ $(document).ready(function() {
 		$('#errorbar').css('display', 'none');
 		$('.stepdiv').css('display', 'none');
 		$('#' + id).css('display', '');
+
+		if(id === 'step3') {
+			updateStorage();
+			updatePrice();
+		}
 	}
 
 	$('#step1_form').submit(function(e) {
@@ -74,6 +80,8 @@ $(document).ready(function() {
 			'alias': $('#alias').val(),
 			'repository': $('#repository').val(),
 			'branch': $('#branch').val(),
+			'plan': $('#plan').val(),
+			'storage': $('#storage').val(),
 		};
 		$.post('/launch', params, function(data) {
 			if(data.error) {
@@ -86,5 +94,51 @@ $(document).ready(function() {
 			$('#step4_hostname').text(hostname);
 			showStep('step4');
 		}, 'json');
+	});
+
+	function updatePrice() {
+		var planOption = $('#plan').find(":selected");
+		var price = parseFloat(planOption.data('price'));
+		var requiredStorage = $('#storage').val();
+		var includedStorage = planOption.data('incl');
+		var extraStorage = requiredStorage - includedStorage;
+		if(extraStorage < 0) {
+			extraStorage = 0;
+		}
+		price += 0.03 * extraStorage;
+		$('#price').val('$' + price);
+	}
+
+	function updateStorage() {
+		if(!autoStorage) {
+			return;
+		}
+		var count = 0;
+		if($('#crypto1').val()) count++;
+		if($('#crypto2').val()) count++;
+		var storage = 30 + count * 50;
+		$('#storage').val(storage);
+		updatePrice();
+	}
+
+	$('#storage').on('input', function(e) {
+		if($('#storage').val() === '') {
+			autoStorage = true;
+		} else {
+			autoStorage = false;
+			updatePrice();
+		}
+	});
+
+	$('#plan').on('change', function(e) {
+		updatePrice();
+	});
+
+	$('#crypto1').on('change', function(e) {
+		updateStorage();
+	});
+
+	$('#crypto2').on('change', function(e) {
+		updateStorage();
 	});
 });

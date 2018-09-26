@@ -15,7 +15,7 @@
 			<h2>Launch BTCPayServer on LunaNode</h2>
 			<div id="errorbar" class="alert alert-danger" style="display:none"></div>
 			<div id="step1" class="stepdiv">
-				<p>This tool will create an m.2 VM with a 80 GB volume (total monthly price: $8.80).</p>
+				<p>For one cryptocurrency, this tool defaults to creating an m.2 VM with a 80 GB volume (total monthly price: $8.80).</p>
 				<p>To get started, enter your API key details below. You'll need to first <a href="https://dynamic.lunanode.com/panel/api">create an API key</a>.</p>
 				<form id="step1_form">
 					<div class="form-group row">
@@ -135,6 +135,32 @@
 						<label for="branch" class="col-sm-2 col-form-label">Branch</label>
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="branch" value="master">
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="plan" class="col-sm-2 col-form-label">VM Plan</label>
+						<div class="col-sm-10">
+							<select class="form-control" id="plan">
+								<option value="m.2" selected data-price="7" data-incl="20">m.2</option>
+								<option value="m.4" data-price="14" data-incl="35">m.4</option>
+								<option value="s.2" data-price="14" data-incl="35">s.2</option>
+								<option value="s.4" data-price="28" data-incl="70">s.4</option>
+								<option value="c.1" data-price="20" data-incl="100">c.1</option>
+							</select>
+							<small id="planHelp" class="form-text text-muted">VM plan, see <a href="https://dynamic.lunanode.com/info">https://dynamic.lunanode.com/info</a>.</small>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="storage" class="col-sm-2 col-form-label">VM Storage (GB)</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="storage">
+							<small id="planHelp" class="form-text text-muted">Storage size in GB to allocate. Defaults to 30 GB + (number of currencies) * 50 GB.</small>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="price" class="col-sm-2 col-form-label">Monthly Price</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="price" disabled>
 						</div>
 					</div>
 					<div class="form-group row">

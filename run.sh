@@ -12,7 +12,7 @@
 : "${BTCPAYGEN_REVERSEPROXY:=nginx}"
 : "${ACME_CA_URI:=https://acme-v01.api.letsencrypt.org/directory}"
 
-BTCPAYGEN_ADDITIONAL_FRAGMENTS="opt-save-storage"
+BTCPAYGEN_ADDITIONAL_FRAGMENTS="opt-save-storage-s"
 
 # Setup SSH access via private key
 ssh-keygen -t rsa -f /root/.ssh/id_rsa_btcpay -q -P ""
