@@ -60,6 +60,16 @@ type LunaFloatingList struct {
 	} `json:"ips"`
 }
 
+type LunaVmCreate struct {
+	VmID string `json:"vm_id"`
+}
+
+type LunaVmInfo struct {
+	Info struct {
+		Status string `json:"status_nohtml"`
+	} `json:"info"`
+}
+
 func main() {
 	scriptBytes, err := ioutil.ReadFile("run.sh")
 	if err != nil {
@@ -109,14 +119,12 @@ func main() {
 		sshKey := r.PostForm.Get("sshkey")
 		email := r.PostForm.Get("email")
 		network := r.PostForm.Get("network")
-		crypto1 := r.PostForm.Get("crypto1")
-		crypto2 := r.PostForm.Get("crypto2")
+		coins := r.PostForm.Get("coins")
 		lightning := r.PostForm.Get("lightning")
 		alias := r.PostForm.Get("alias")
 		repository := r.PostForm.Get("repository")
 		branch := r.PostForm.Get("branch")
 		plan := r.PostForm.Get("plan")
-		storage := r.PostForm.Get("storage")
 
 		remoteIP := r.RemoteAddr
 
@@ -124,8 +132,7 @@ func main() {
 		myscript = strings.Replace(myscript, "[HOSTNAME]", hostname, -1)
 		myscript = strings.Replace(myscript, "[EMAIL]", email, -1)
 		myscript = strings.Replace(myscript, "[NETWORK]", network, -1)
-		myscript = strings.Replace(myscript, "[CRYPTO1]", crypto1, -1)
-		myscript = strings.Replace(myscript, "[CRYPTO2]", crypto2, -1)
+		myscript = strings.Replace(myscript, "[COINS]", coins, -1)
 		myscript = strings.Replace(myscript, "[LIGHTNING]", lightning, -1)
 		myscript = strings.Replace(myscript, "[ALIAS]", alias, -1)
 		myscript = strings.Replace(myscript, "[REPOSITORY]", repository, -1)
@@ -138,55 +145,26 @@ func main() {
 			}
 		}
 
-		// create volume
-		log.Printf("[%s] creating volume (hostname: %s, crypto1: %s, crypto2: %s, plan: %s, storage: %s)", remoteIP, hostname, crypto1, crypto2, plan, storage)
-		var createResponse LunaVolumeCreate
-		err := request(apiID, apiKey, "volume", "create", map[string]string{
-			"region": "toronto",
-			"label": hostname,
-			"size": storage,
-			"image": strconv.Itoa(IMAGE_ID),
-		}, &createResponse)
-		if err != nil {
-			errorResponse(w, r, err.Error())
-			return
-		}
-		cleanupFuncs = append(cleanupFuncs, func() {
-			request(apiID, apiKey, "volume", "delete", map[string]string{
-				"volume_id": createResponse.VolumeID,
-			}, nil)
-		})
-
-		done := false
-		log.Printf("[%s] waiting for volume", remoteIP)
-		for i := 0; i < 20; i++ {
-			time.Sleep(5*time.Second)
-			var infoResponse LunaVolumeInfo
-			err := request(apiID, apiKey, "volume", "info", map[string]string{
-				"volume_id": createResponse.VolumeID,
-			}, &infoResponse)
+		// create volumes
+		coinlist := strings.Split(coins, ",")
+		log.Printf("[%s] creating volumes (hostname: %s, coins: %s, plan: %s)", remoteIP, hostname, coins, plan)
+		var volumeIDs []string
+		for _, coin := range coinlist {
+			volumeID, err, cleanupFunc := createVolume(apiID, apiKey, hostname, coin, "60")
 			if err != nil {
 				cleanup()
 				errorResponse(w, r, err.Error())
 				return
 			}
-			if infoResponse.Volume.Status == "available" {
-				done = true
-				break
-			}
-		}
-		if !done {
-			cleanup()
-			errorResponse(w, r, "timed out waiting for volume creation")
-			return
+			cleanupFuncs = append(cleanupFuncs, cleanupFunc)
+			volumeIDs = append(volumeIDs, volumeID)
 		}
 
 		params := map[string]string{
 			"hostname": hostname,
 			"region": "toronto",
 			"plan_id": plan,
-			"volume_id": createResponse.VolumeID,
-			"volume_virtio": "yes",
+			"image_id": strconv.Itoa(IMAGE_ID),
 			"ip": ip,
 		}
 
@@ -242,12 +220,45 @@ func main() {
 		}
 
 		// create vm
-		err = request(apiID, apiKey, "vm", "create", params, nil)
+		var vmResponse LunaVmCreate
+		err = request(apiID, apiKey, "vm", "create", params, &vmResponse)
 		if err != nil {
 			cleanup()
 			errorResponse(w, r, "error creating VM: " + err.Error())
 			return
 		}
+		done := false
+		for i := 0; i < 10; i++ {
+			time.Sleep(5*time.Second)
+			var infoResponse LunaVmInfo
+			err := request(apiID, apiKey, "vm", "info", map[string]string{
+				"vm_id": vmResponse.VmID,
+			}, &infoResponse)
+			if err != nil {
+				cleanup()
+				errorResponse(w, r, "error waiting for VM: " + err.Error())
+				return
+			}
+			if infoResponse.Info.Status == "Online" {
+				done = true
+				break
+			}
+		}
+		if !done {
+			cleanup()
+			errorResponse(w, r, "timed out waiting for VM creation")
+			return
+		}
+
+		// attach volumes
+		for _, volumeID := range volumeIDs {
+			request(apiID, apiKey, "volume", "attach", map[string]string{
+				"vm_id": vmResponse.VmID,
+				"volume_id": volumeID,
+				"target": "/dev/vda",
+			}, nil)
+		}
+
 		jsonResponse(w, NullResponse{})
 	})
 	log.Fatal(http.ListenAndServe(":8080", nil))
@@ -361,4 +372,43 @@ func getFreeFloatingIP(apiID string, apiKey string, region string) (string, erro
 		}
 	}
 	return "", nil
+}
+
+func createVolume(apiID string, apiKey string, hostname string, coin string, size string) (string, error, func()) {
+	var createResponse LunaVolumeCreate
+	err := request(apiID, apiKey, "volume", "create", map[string]string{
+		"region": "toronto",
+		"label": fmt.Sprintf("%s-%s", hostname, coin),
+		"size": size,
+	}, &createResponse)
+	if err != nil {
+		return "", err, nil
+	}
+	cleanup := func() {
+		request(apiID, apiKey, "volume", "delete", map[string]string{
+			"volume_id": createResponse.VolumeID,
+		}, nil)
+	}
+
+	done := false
+	for i := 0; i < 10; i++ {
+		time.Sleep(2*time.Second)
+		var infoResponse LunaVolumeInfo
+		err := request(apiID, apiKey, "volume", "info", map[string]string{
+			"volume_id": createResponse.VolumeID,
+		}, &infoResponse)
+		if err != nil {
+			cleanup()
+			return "", err, nil
+		}
+		if infoResponse.Volume.Status == "available" {
+			done = true
+			break
+		}
+	}
+	if !done {
+		cleanup()
+		return "", fmt.Errorf("timed out waiting for volume creation"), nil
+	}
+	return createResponse.VolumeID, nil, cleanup
 }

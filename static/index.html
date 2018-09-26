@@ -81,31 +81,14 @@
 						</div>
 					</div>
 					<div class="form-group row">
-						<label for="crypto1" class="col-sm-2 col-form-label">Supported Crypto #1</label>
+						<label for="coins" class="col-sm-2 col-form-label">Supported Cryptocurrencies</label>
 						<div class="col-sm-10">
-							<select class="form-control" id="crypto1">
-								<option value="btc" selected>btc</option>
-								<option value="ltc">ltc</option>
-								<option value="grs">grs</option>
-								<option value="btg">btg</option>
-								<option value="ftc">ftc</option>
-								<option value="via">via</option>
-								<option value="">None</option>
-							</select>
-						</div>
-					</div>
-					<div class="form-group row">
-						<label for="crypto2" class="col-sm-2 col-form-label">Supported Crypto #2</label>
-						<div class="col-sm-10">
-							<select class="form-control" id="crypto2">
-								<option value="btc">btc</option>
-								<option value="ltc">ltc</option>
-								<option value="grs">grs</option>
-								<option value="btg">btg</option>
-								<option value="ftc">ftc</option>
-								<option value="via">via</option>
-								<option value="" selected>None</option>
-							</select>
+							<input type="checkbox" class="supportedcoins" data-coin="btc" checked /> BTC
+							<input type="checkbox" class="supportedcoins" data-coin="ltc" disabled /> LTC
+							<input type="checkbox" class="supportedcoins" data-coin="grs" disabled /> GRS
+							<input type="checkbox" class="supportedcoins" data-coin="btg" disabled /> BTG
+							<input type="checkbox" class="supportedcoins" data-coin="ftc" disabled /> FTC
+							<input type="checkbox" class="supportedcoins" data-coin="via" disabled /> VIA
 						</div>
 					</div>
 					<div class="form-group row">
@@ -141,26 +124,21 @@
 						<label for="plan" class="col-sm-2 col-form-label">VM Plan</label>
 						<div class="col-sm-10">
 							<select class="form-control" id="plan">
-								<option value="m.2" selected data-price="7" data-incl="20">m.2</option>
-								<option value="m.4" data-price="14" data-incl="35">m.4</option>
-								<option value="s.2" data-price="14" data-incl="35">s.2</option>
-								<option value="s.4" data-price="28" data-incl="70">s.4</option>
-								<option value="c.1" data-price="20" data-incl="100">c.1</option>
+								<option value="m.2" selected data-price="7">m.2</option>
+								<option value="m.4" data-price="14">m.4</option>
+								<option value="m.8" data-price="28">m.8</option>
+								<option value="s.2" data-price="14">s.2</option>
+								<option value="s.4" data-price="28">s.4</option>
+								<option value="c.1" data-price="20">c.1</option>
 							</select>
 							<small id="planHelp" class="form-text text-muted">VM plan, see <a href="https://dynamic.lunanode.com/info">https://dynamic.lunanode.com/info</a>.</small>
-						</div>
-					</div>
-					<div class="form-group row">
-						<label for="storage" class="col-sm-2 col-form-label">VM Storage (GB)</label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="storage">
-							<small id="planHelp" class="form-text text-muted">Storage size in GB to allocate. Defaults to 30 GB + (number of currencies) * 50 GB.</small>
 						</div>
 					</div>
 					<div class="form-group row">
 						<label for="price" class="col-sm-2 col-form-label">Monthly Price</label>
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="price" disabled>
+							<small id="priceHelp" class="form-text text-muted">We'll create one 60 GB volume for each cryptocurrency to store the blockchain data, so the total price is the VM price plus this storage cost.</small>
 						</div>
 					</div>
 					<div class="form-group row">

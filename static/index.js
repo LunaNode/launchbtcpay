@@ -3,7 +3,6 @@ $(document).ready(function() {
 	var apiKey = null;
 	var ip = null;
 	var hostname = null;
-	var autoStorage = true; // autoset storage unless user edited it
 
 	function showError(msg) {
 		$('#errorbar').text(msg);
@@ -16,7 +15,6 @@ $(document).ready(function() {
 		$('#' + id).css('display', '');
 
 		if(id === 'step3') {
-			updateStorage();
 			updatePrice();
 		}
 	}
@@ -66,6 +64,12 @@ $(document).ready(function() {
 		e.preventDefault();
 
 		showStep('loading2');
+		var coins = [];
+		$('.supportedcoins:checked').each(function() {
+			coins.push($(this).data('coin'));
+		});
+		coins = coins.join(',');
+
 		var params = {
 			'api_id': apiID,
 			'api_key': apiKey,
@@ -74,14 +78,12 @@ $(document).ready(function() {
 			'sshkey': $('#sshkey').val(),
 			'email': $('#email').val(),
 			'network': $('#network').val(),
-			'crypto1': $('#crypto1').val(),
-			'crypto2': $('#crypto2').val(),
+			'coins': coins,
 			'lightning': $('#lightning').val(),
 			'alias': $('#alias').val(),
 			'repository': $('#repository').val(),
 			'branch': $('#branch').val(),
 			'plan': $('#plan').val(),
-			'storage': $('#storage').val(),
 		};
 		$.post('/launch', params, function(data) {
 			if(data.error) {
@@ -99,46 +101,16 @@ $(document).ready(function() {
 	function updatePrice() {
 		var planOption = $('#plan').find(":selected");
 		var price = parseFloat(planOption.data('price'));
-		var requiredStorage = $('#storage').val();
-		var includedStorage = planOption.data('incl');
-		var extraStorage = requiredStorage - includedStorage;
-		if(extraStorage < 0) {
-			extraStorage = 0;
-		}
-		price += 0.03 * extraStorage;
+		var storage = 60 * $('.supportedcoins:checked').length;
+		price += 0.03 * storage;
 		$('#price').val('$' + price);
 	}
-
-	function updateStorage() {
-		if(!autoStorage) {
-			return;
-		}
-		var count = 0;
-		if($('#crypto1').val()) count++;
-		if($('#crypto2').val()) count++;
-		var storage = 30 + count * 50;
-		$('#storage').val(storage);
-		updatePrice();
-	}
-
-	$('#storage').on('input', function(e) {
-		if($('#storage').val() === '') {
-			autoStorage = true;
-		} else {
-			autoStorage = false;
-			updatePrice();
-		}
-	});
 
 	$('#plan').on('change', function(e) {
 		updatePrice();
 	});
 
-	$('#crypto1').on('change', function(e) {
-		updateStorage();
-	});
-
-	$('#crypto2').on('change', function(e) {
-		updateStorage();
+	$('.supportedcoins').on('change', function(e) {
+		updatePrice();
 	});
 });
