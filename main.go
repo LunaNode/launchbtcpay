@@ -161,11 +161,16 @@ func main() {
 		}
 
 		params := map[string]string{
-			"hostname": hostname,
 			"region": "toronto",
 			"plan_id": plan,
 			"image_id": strconv.Itoa(IMAGE_ID),
 			"ip": ip,
+		}
+
+		if strings.Contains(hostname, "rdns.lunanode.com") {
+			params["hostname"] = "btcpayserver"
+		} else {
+			params["hostname"] = hostname
 		}
 
 		log.Printf("[%s] creating vm", remoteIP)

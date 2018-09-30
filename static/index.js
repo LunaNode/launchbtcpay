@@ -44,14 +44,21 @@ $(document).ready(function() {
 			}
 
 			ip = data.ip;
-			$('#step2_ip').text(data.ip);
+			$('#step2_ip').text(ip);
+			var ipParts = ip.split('.');
+			var rdns = ipParts.reverse().join('.') + '.rdns.lunanode.com';
+			$('#step2_rdns').text(rdns);
 			showStep('step2');
 		}, 'json');
 	});
 
 	$('#step2_form').submit(function(e) {
 		e.preventDefault();
-		hostname = $('#hostname').val();
+		if($('.hostname_type:checked').data('type') === 'rdns') {
+			hostname = $('#step2_rdns').text();
+		} else {
+			hostname = $('#hostname').val();
+		}
 		if(hostname.length == 0) {
 			showError('Hostname cannot be empty!');
 			return;
@@ -103,7 +110,7 @@ $(document).ready(function() {
 		var price = parseFloat(planOption.data('price'));
 		var storage = 60 * $('.supportedcoins:checked').length;
 		price += 0.03 * storage;
-		$('#price').val('$' + price);
+		$('#price').val('$' + price.toFixed(2));
 	}
 
 	$('#plan').on('change', function(e) {
@@ -112,5 +119,13 @@ $(document).ready(function() {
 
 	$('.supportedcoins').on('change', function(e) {
 		updatePrice();
+	});
+
+	$('.hostname_type').on('change', function(e) {
+		if($('.hostname_type:checked').data('type') === 'rdns') {
+			$('#hostname').prop('disabled', true);
+		} else {
+			$('#hostname').prop('disabled', false);
+		}
 	});
 });
