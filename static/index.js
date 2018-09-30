@@ -5,12 +5,16 @@ $(document).ready(function() {
 	var hostname = null;
 
 	function showError(msg) {
-		$('#errorbar').text(msg);
-		$('#errorbar').css('display', '');
+		if(msg) {
+			$('#errorbar').text(msg);
+			$('#errorbar').css('display', '');
+		} else {
+			$('#errorbar').css('display', 'none');
+		}
 	}
 
 	function showStep(id) {
-		$('#errorbar').css('display', 'none');
+		showError();
 		$('.stepdiv').css('display', 'none');
 		$('#' + id).css('display', '');
 
@@ -67,15 +71,19 @@ $(document).ready(function() {
 		showStep('step3');
 	});
 
-	$('#step3_form').submit(function(e) {
-		e.preventDefault();
-
-		showStep('loading2');
+	function getCheckedCoins() {
 		var coins = [];
 		$('.supportedcoins:checked').each(function() {
 			coins.push($(this).data('coin'));
 		});
-		coins = coins.join(',');
+		return coins;
+	}
+
+	$('#step3_form').submit(function(e) {
+		e.preventDefault();
+
+		showStep('loading2');
+		var coins = getCheckedCoins().join(',');
 
 		var params = {
 			'api_id': apiID,
@@ -113,12 +121,32 @@ $(document).ready(function() {
 		$('#price').val('$' + price.toFixed(2));
 	}
 
+	function validateStep3() {
+		// LND can only be used with BTC and LTC
+		var unsupportedCoins = getCheckedCoins().filter(function(el) {
+			return el != 'btc' && el != 'ltc';
+		});
+		var lndEnabled = $('#lightning').val() === 'lnd';
+		if(unsupportedCoins.length > 0 && lndEnabled) {
+			showError('LND can only be used with BTC and LTC');
+			return false;
+		}
+
+		showError();
+		return true;
+	}
+
 	$('#plan').on('change', function(e) {
 		updatePrice();
 	});
 
 	$('.supportedcoins').on('change', function(e) {
 		updatePrice();
+		validateStep3();
+	});
+
+	$('#lightning').on('change', function(e) {
+		validateStep3();
 	});
 
 	$('.hostname_type').on('change', function(e) {
