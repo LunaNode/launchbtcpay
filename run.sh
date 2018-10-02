@@ -80,6 +80,7 @@ env['BTCPAY_DOCKER_REPO_BRANCH'] = branch
 env['BTCPAYGEN_LIGHTNING'] = lightning
 env['LIGHTNING_ALIAS'] = alias
 env['BTCPAYGEN_ADDITIONAL_FRAGMENTS'] = 'opt-save-storage-s'
+env['BTCPAY_HOST_SSHKEYFILE'] = '/root/.ssh/id_rsa_btcpay'
 
 for i in range(5):
 	popen = subprocess.Popen(
