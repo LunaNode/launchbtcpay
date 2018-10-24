@@ -62,8 +62,18 @@ $(document).ready(function() {
 		} else {
 			hostname = $('#hostname').val();
 		}
+		hostname = hostname.trim();
 		if(hostname.length == 0) {
 			showError('Hostname cannot be empty!');
+			return;
+		} else if(hostname.indexOf('http://') !== -1 || hostname.indexOf('https://') !== -1) {
+			showError('Please enter just the hostname (e.g. "example.com", without http:// or URL path).');
+			return;
+		} else if(hostname.indexOf(':') !== -1) {
+			showError('Please enter just the hostname (e.g., "example.com" or "btcpay.example.com").')
+			return;
+		} else if(/^[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*$/.test(hostname)) {
+			showError('Please enter a hostname like "example.com" or "btcpay.example.com", not an IP address.');
 			return;
 		}
 
