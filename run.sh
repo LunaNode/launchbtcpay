@@ -25,6 +25,14 @@ coinmap = {
 	'ftc': '/var/lib/docker/volumes/generated_feathercoin_datadir/_data/blocks',
 	'via': '/var/lib/docker/volumes/generated_viacoin_datadir/_data/blocks',
 }
+coinmapTestnet = {
+	'btc': '/var/lib/docker/volumes/generated_bitcoin_datadir/_data/testnet3/blocks',
+	'ltc': '/var/lib/docker/volumes/generated_litecoin_datadir/_data/testnet4/blocks',
+	'grs': '/var/lib/docker/volumes/generated_groestlcoin_datadir/_data/testnet3/blocks/',
+	'btg': '/var/lib/docker/volumes/generated_bgold_datadir/_data/testnet3/blocks',
+	'ftc': '/var/lib/docker/volumes/generated_feathercoin_datadir/_data/testnet4/blocks',
+	'via': '/var/lib/docker/volumes/generated_viacoin_datadir/_data/testnet3/blocks',
+}
 
 # setup SSH access via private key
 if not os.path.exists('/root/.ssh/id_rsa_btcpay'):
@@ -55,7 +63,10 @@ if 'vdc' not in mount_output:
 			continue
 		volume = '/dev/' + volumes[0]
 		volumes = volumes[1:]
-		path = coinmap[coin]
+		if network == 'testnet':
+			path = coinmapTestnet[coin]
+		else:
+			path = coinmap[coin]
 		try:
 			os.makedirs(path, 0o755)
 		except FileExistsError:
