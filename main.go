@@ -133,6 +133,7 @@ func main() {
 		repository := r.PostForm.Get("repository")
 		branch := r.PostForm.Get("branch")
 		plan := r.PostForm.Get("plan")
+		accelerate := r.PostForm.Get("accelerate")
 
 		remoteIP := r.RemoteAddr
 
@@ -289,6 +290,15 @@ func main() {
 				"vm_id": vmResponse.VmID,
 				"volume_id": volumeID,
 				"target": "/dev/vda",
+			}, nil)
+		}
+
+		// enable charge_for_cpu if desired
+		if accelerate == "yes" {
+			request(apiID, apiKey, "vm", "set-fairshare", map[string]string{
+				"vm_id": vmResponse.VmID,
+				"charge_for_cpu": "yes",
+				"fairshare_nolend": "no",
 			}, nil)
 		}
 

@@ -98,6 +98,7 @@ $(document).ready(function() {
 			'repository': $('#repository').val(),
 			'branch': $('#branch').val(),
 			'plan': $('#plan').val(),
+			'accelerate': $('#accelerate').prop('checked') ? 'yes' : 'no',
 		};
 		$.post('/launch', params, function(data) {
 			if(data.error) {
