@@ -49,17 +49,16 @@ $(document).ready(function() {
 
 			ip = data.ip;
 			$('#step2_ip').text(ip);
-			var ipParts = ip.split('.');
-			var rdns = ipParts.reverse().join('.') + '.rdns.lunanode.com';
-			$('#step2_rdns').text(rdns);
+			var autohostname = 'btcpay' + (100000 + Math.floor(Math.random() * 899999)) + '.lndyn.com';
+			$('#step2_autohostname').text(autohostname);
 			showStep('step2');
 		}, 'json');
 	});
 
 	$('#step2_form').submit(function(e) {
 		e.preventDefault();
-		if($('.hostname_type:checked').data('type') === 'rdns') {
-			hostname = $('#step2_rdns').text();
+		if($('.hostname_type:checked').data('type') === 'autohostname') {
+			hostname = $('#step2_autohostname').text();
 		} else {
 			hostname = $('#hostname').val();
 		}
@@ -150,7 +149,7 @@ $(document).ready(function() {
 	});
 
 	$('.hostname_type').on('change', function(e) {
-		if($('.hostname_type:checked').data('type') === 'rdns') {
+		if($('.hostname_type:checked').data('type') === 'autohostname') {
 			$('#hostname').prop('disabled', true);
 		} else {
 			$('#hostname').prop('disabled', false);

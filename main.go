@@ -64,6 +64,14 @@ type LunaVmCreate struct {
 	VmID string `json:"vm_id"`
 }
 
+type LunaDynList struct {
+	Dyns map[string]struct{
+		ID string `json:"id"`
+		Name string `json:"name"`
+		IP string `json:"ip"`
+	} `json:"dyns"`
+}
+
 type LunaVmInfo struct {
 	Info struct {
 		Status string `json:"status_nohtml"`
@@ -160,17 +168,37 @@ func main() {
 			volumeIDs = append(volumeIDs, volumeID)
 		}
 
+		// create DNS if desired
+		if strings.HasSuffix(hostname, ".lndyn.com") && strings.HasPrefix(hostname, "btcpay") && len(hostname) == 22 {
+			err := request(apiID, apiKey, "dns", "dyn-add", map[string]string{
+				"name": strings.Split(hostname, ".")[0],
+				"ip": ip,
+			}, nil)
+			if err != nil {
+				cleanup()
+				errorResponse(w, r, err.Error())
+				return
+			}
+			cleanupFuncs = append(cleanupFuncs, func() {
+				var response LunaDynList
+				if err := request(apiID, apiKey, "dns", "dyn-list", nil, &response); err != nil {
+					log.Printf("warning: error listing dyns for cleanup: %v", err)
+					return
+				}
+				for _, dyn := range response.Dyns {
+					if dyn.Name == strings.Split(hostname, ".")[0] || dyn.IP == ip {
+						request(apiID, apiKey, "dns", "dyn-remove", map[string]string{"dyn_id": dyn.ID}, nil)
+					}
+				}
+			})
+		}
+
 		params := map[string]string{
 			"region": "toronto",
 			"plan_id": plan,
 			"image_id": strconv.Itoa(IMAGE_ID),
 			"ip": ip,
-		}
-
-		if strings.Contains(hostname, "rdns.lunanode.com") {
-			params["hostname"] = "btcpayserver"
-		} else {
-			params["hostname"] = hostname
+			"hostname": hostname,
 		}
 
 		log.Printf("[%s] creating vm", remoteIP)
