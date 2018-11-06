@@ -132,16 +132,6 @@ $(document).ready(function() {
 	}
 
 	function validateStep3() {
-		// LND can only be used with BTC and LTC
-		var unsupportedCoins = getCheckedCoins().filter(function(el) {
-			return el != 'btc' && el != 'ltc';
-		});
-		var lndEnabled = $('#lightning').val() === 'lnd';
-		if(unsupportedCoins.length > 0 && lndEnabled) {
-			showError('LND can only be used with BTC and LTC');
-			return false;
-		}
-
 		showError();
 		return true;
 	}
