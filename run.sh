@@ -24,6 +24,8 @@ coinmap = {
 	'btg': '/var/lib/docker/volumes/generated_bgold_datadir/_data/blocks',
 	'ftc': '/var/lib/docker/volumes/generated_feathercoin_datadir/_data/blocks',
 	'via': '/var/lib/docker/volumes/generated_viacoin_datadir/_data/blocks',
+	'doge': '/var/lib/docker/volumes/generated_dogecoin_datadir/_data/blocks',
+	'mona': '/var/lib/docker/volumes/generated_monacoin_datadir/_data/blocks',
 }
 coinmapTestnet = {
 	'btc': '/var/lib/docker/volumes/generated_bitcoin_datadir/_data/testnet3/blocks',
@@ -32,6 +34,8 @@ coinmapTestnet = {
 	'btg': '/var/lib/docker/volumes/generated_bgold_datadir/_data/testnet3/blocks',
 	'ftc': '/var/lib/docker/volumes/generated_feathercoin_datadir/_data/testnet4/blocks',
 	'via': '/var/lib/docker/volumes/generated_viacoin_datadir/_data/testnet3/blocks',
+	'doge': '/var/lib/docker/volumes/generated_dogecoin_datadir/_data/testnet3/blocks',
+	'mona': '/var/lib/docker/volumes/generated_monacoin_datadir/_data/testnet3/blocks',
 }
 
 # setup SSH access via private key
