@@ -100,13 +100,14 @@ env['BTCPAY_HOST_SSHKEYFILE'] = '/root/.ssh/id_rsa_btcpay'
 for i in range(5):
 	popen = subprocess.Popen(
 		['bash', '-c', '. ./btcpay-setup.sh -i'],
-		stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True,
+		stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
 		env=env, cwd='/root/btcpayserver-docker'
 	)
 	had_error = False
-	for line in iter(popen.stdout.readline, ''):
-		print('[btcpay-setup] ' + line.strip())
-		if 'Could not resolve host:' in line or 'docker-compose: command not found' in line:
+	for line in popen.stdout:
+		sys.stdout.buffer.write(b'[btcpay-setup] ')
+		sys.stdout.buffer.write(line)
+		if b'Could not resolve host:' in line or b'docker-compose: command not found' in line:
 			had_error = True
 	popen.stdout.close()
 	return_code = popen.wait()
