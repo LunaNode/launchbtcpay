@@ -38,15 +38,6 @@ coinmapTestnet = {
 	'mona': '/var/lib/docker/volumes/generated_monacoin_datadir/_data/testnet3/blocks',
 }
 
-# setup SSH access via private key
-if not os.path.exists('/root/.ssh/id_rsa_btcpay'):
-	subprocess.call(['ssh-keygen', '-t', 'rsa', '-f', '/root/.ssh/id_rsa_btcpay', '-q', '-P', ''])
-	with open('/root/.ssh/id_rsa_btcpay.pub', 'r') as f:
-		pubkey = f.read()
-	with open('/root/.ssh/authorized_keys', 'w') as f:
-		f.write("# Key used by BTCPay Server\n")
-		f.write(pubkey)
-
 # clone btcpayserver-docker
 if not os.path.exists('/root/btcpayserver-docker'):
 	subprocess.call(['git', 'clone', repository, 'btcpayserver-docker'], cwd='/root/')
@@ -95,7 +86,7 @@ env['BTCPAY_DOCKER_REPO_BRANCH'] = branch
 env['BTCPAYGEN_LIGHTNING'] = lightning
 env['LIGHTNING_ALIAS'] = alias
 env['BTCPAYGEN_ADDITIONAL_FRAGMENTS'] = 'opt-save-storage-s'
-env['BTCPAY_HOST_SSHKEYFILE'] = '/root/.ssh/id_rsa_btcpay'
+env['BTCPAY_ENABLE_SSH'] = 'true'
 
 for i in range(5):
 	popen = subprocess.Popen(
