@@ -19,7 +19,7 @@ reverseproxy = 'nginx'
 acme_uri = 'https://acme-v01.api.letsencrypt.org/directory'
 coinmap = {
 	'btc': '/var/lib/docker/volumes/generated_bitcoin_datadir/_data/blocks',
-	'lbtc': '/var/lib/docker/volumes/generated_elements_datadir/_data/blocks',
+	'lbtc': '/var/lib/docker/volumes/generated_elements_datadir/_data/liquidv1/blocks',
 	'ltc': '/var/lib/docker/volumes/generated_litecoin_datadir/_data/blocks',
 	'grs': '/var/lib/docker/volumes/generated_groestlcoin_datadir/_data/blocks/',
 	'btg': '/var/lib/docker/volumes/generated_bgold_datadir/_data/blocks',
