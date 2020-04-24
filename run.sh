@@ -27,6 +27,9 @@ coinmap = {
 	'via': '/var/lib/docker/volumes/generated_viacoin_datadir/_data/blocks',
 	'doge': '/var/lib/docker/volumes/generated_dogecoin_datadir/_data/blocks',
 	'mona': '/var/lib/docker/volumes/generated_monacoin_datadir/_data/blocks',
+	'btx': '/var/lib/docker/volumes/generated_bitcore_datadir/_data/blocks/',
+	'dash': '/var/lib/docker/volumes/generated_dash_datadir/_data/blocks/',
+	'xmr': '/var/lib/docker/volumes/generated_xmr_data-1/_data/x/',
 }
 coinmapTestnet = {
 	'btc': '/var/lib/docker/volumes/generated_bitcoin_datadir/_data/testnet3/blocks',
@@ -38,6 +41,9 @@ coinmapTestnet = {
 	'via': '/var/lib/docker/volumes/generated_viacoin_datadir/_data/testnet3/blocks',
 	'doge': '/var/lib/docker/volumes/generated_dogecoin_datadir/_data/testnet3/blocks',
 	'mona': '/var/lib/docker/volumes/generated_monacoin_datadir/_data/testnet3/blocks',
+	'btx': '/var/lib/docker/volumes/generated_bitcore_datadir/_data/testnet3/blocks/',
+	'dash': '/var/lib/docker/volumes/generated_dash_datadir/_data/testnet3/blocks/',
+	'xmr': '/var/lib/docker/volumes/generated_xmr_data-1/_data/testnet3/x/',
 }
 
 # clone btcpayserver-docker
