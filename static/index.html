@@ -43,18 +43,19 @@
 				<form id="step2_form">
 					<div class="form-group row">
 						<div class="col-sm-12">
-							<input type="radio" name="hostname_type" class="hostname_type" data-type="autohostname" checked /> Use <strong id="step2_autohostname"></strong>.
-						</div>
-					</div>
-					<div class="form-group row">
-						<div class="col-sm-12">
-							<input type="radio" name="hostname_type" class="hostname_type" data-type="user" /> Use my own hostname
+							<input type="radio" name="hostname_type" class="hostname_type" data-type="user" checked /> Use my own hostname
 						</div>
 					</div>
 					<div class="form-group row">
 						<label for="hostname" class="col-sm-2 col-form-label">Hostname</label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="hostname" placeholder="e.g. btcpay.example.com" disabled>
+							<input type="text" class="form-control" id="hostname" placeholder="e.g. btcpay.example.com">
+							<small class="form-text text-muted">If you own a domain name like 'yourdomain.com', you can enter a hostname like 'btcpay.yourdomain.com' here. You will need to first login to your domain name registrar and create a DNS 'A' record pointing 'btcpay.yourdomain.com' to the IP shown above.</small>
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="col-sm-12">
+							<input type="radio" name="hostname_type" class="hostname_type" data-type="autohostname" /> Use <strong id="step2_autohostname"></strong>.
 						</div>
 					</div>
 					<div class="form-group row">
@@ -174,6 +175,7 @@
 			</div>
 			<div id="step4" class="stepdiv" style="display:none">
 				<p>Your VM has launched successfully, and BTCPayServer is being setup! After about five minutes, it'll be ready at <a id="step4_hostname" href=""></a>.</p>
+				<p>Note: recently many domain names with the word "btc" or "btcpay" are marked "dangerous" in Chrome and Firefox due to Google's broken AI. If you see this warning, you can click "Advanced" or "Details" in your browser, and then click report a detection error; after submitting the error report form, it should be fixed by Google within a few days.</p>
 			</div>
 			<div id="loading" class="stepdiv" style="display:none">
 				<img src="loading.gif" width="200px" height="200px" />
