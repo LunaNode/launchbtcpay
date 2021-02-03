@@ -42,6 +42,11 @@ type LunaSshkeyAdd struct {
 	KeyID string `json:"key_id"`
 }
 
+type LunaSshkeyItem struct {
+	ID string `json:"id"`
+	Value string `json:"value"`
+}
+
 type LunaScriptCreate struct {
 	ScriptID string `json:"script_id"`
 }
@@ -205,23 +210,45 @@ func main() {
 		log.Printf("[%s] creating vm", remoteIP)
 
 		// add ssh key, if set
+		// but check if we can reuse a previously added key first
 		if sshKey != "" {
-			var keyResponse LunaSshkeyAdd
-			err := request(apiID, apiKey, "sshkey", "add", map[string]string{
-				"label": "tmp",
-				"sshkey": sshKey,
-			}, &keyResponse)
+			sshKey = strings.TrimSpace(sshKey)
+			var listResponse map[string]json.RawMessage
+			err := request(apiID, apiKey, "sshkey", "list", nil, &listResponse)
 			if err != nil {
 				cleanup()
-				errorResponse(w, r, "error adding SSH key: " + err.Error())
+				errorResponse(w, r, "error listing SSH keys: " + err.Error())
 				return
 			}
-			params["key_id"] = keyResponse.KeyID
-			defer func() {
-				request(apiID, apiKey, "sshkey", "remove", map[string]string{
-					"key_id": keyResponse.KeyID,
-				}, nil)
-			}()
+			var foundID string
+			for k, msg := range listResponse {
+				if k == "success" {
+					continue
+				}
+				var key LunaSshkeyItem
+				if err := json.Unmarshal(msg, &key); err != nil {
+					continue
+				}
+				if strings.TrimSpace(key.Value) == sshKey {
+					foundID = key.ID
+				}
+			}
+
+			if foundID == "" {
+				var keyResponse LunaSshkeyAdd
+				err := request(apiID, apiKey, "sshkey", "add", map[string]string{
+					"label": "tmp",
+					"sshkey": sshKey,
+				}, &keyResponse)
+				if err != nil {
+					cleanup()
+					errorResponse(w, r, "error adding SSH key: " + err.Error())
+					return
+				}
+				foundID = keyResponse.KeyID
+			}
+
+			params["key_id"] = foundID
 		} else {
 			params["set_password"] = "yes"
 		}
