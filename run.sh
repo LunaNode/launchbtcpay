@@ -29,7 +29,7 @@ coinmap = {
 	'mona': '/var/lib/docker/volumes/generated_monacoin_datadir/_data/blocks',
 	'btx': '/var/lib/docker/volumes/generated_bitcore_datadir/_data/blocks/',
 	'dash': '/var/lib/docker/volumes/generated_dash_datadir/_data/blocks/',
-	'xmr': '/var/lib/docker/volumes/generated_xmr_data-1/_data/x/',
+	'xmr': '/var/lib/docker/volumes/generated_xmr_data/_data/lmdb/',
 }
 coinmapTestnet = {
 	'btc': '/var/lib/docker/volumes/generated_bitcoin_datadir/_data/testnet3/blocks',
