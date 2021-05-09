@@ -80,6 +80,11 @@ if 'vdc' not in mount_output:
 		with open('/etc/fstab', 'a') as f:
 			f.write("UUID={} {} ext4 defaults 0 2\n".format(uuid, path))
 
+		# Monero needs 777 permission (or chown to user) since it runs as different user.
+		# We run it here since os.makedirs doesn't seem to work right.
+		if coin == 'xmr':
+			subprocess.call(['chmod', '-R', '777', '/var/lib/docker/volumes/generated_xmr_data/'])
+
 crypto_counter = 1
 for coin in coins:
 	if coin in coinmap:
