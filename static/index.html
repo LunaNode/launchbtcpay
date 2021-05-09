@@ -15,7 +15,7 @@
 			<h2>Launch BTCPayServer on LunaNode</h2>
 			<div id="errorbar" class="alert alert-danger" style="display:none"></div>
 			<div id="step1" class="stepdiv">
-				<p>For one cryptocurrency, this tool defaults to creating an m.2 VM with a 80 GB volume (total monthly price: $8.80).</p>
+				<p>For one cryptocurrency with m.2 VM, the total monthly price will be $8.80. Monitor your recurring charges on the <a href="https://dynamic.lunanode.com/panel/">Dashboard</a>.</p>
 				<p>To get started, enter your <a href="https://www.lunanode.com">LunaNode</a> API key details below. You'll need to first <a href="https://dynamic.lunanode.com/panel/api">create an API key</a>.</p>
 				<form id="step1_form">
 					<div class="form-group row">
@@ -116,15 +116,15 @@
 						<label for="plan" class="col-sm-2 col-form-label">VM Plan</label>
 						<div class="col-sm-10">
 							<select class="form-control" id="plan">
-								<option value="m.2" selected data-price="7">m.2</option>
-								<option value="m.4" data-price="14">m.4</option>
-								<option value="m.8" data-price="28">m.8</option>
+								<option value="m.2" data-price="7">m.2 (2 GB RAM)</option>
+								<option value="m.4" selected data-price="14">m.4 (4 GB RAM)</option>
+								<option value="m.8" data-price="28">m.8 (8 GB RAM)</option>
 								<option value="s.2" data-price="14">s.2</option>
 								<option value="s.4" data-price="28">s.4</option>
 								<option value="c.1" data-price="20">c.1</option>
 							</select>
 							<small id="planHelp" class="form-text text-muted">VM plan, see <a href="https://dynamic.lunanode.com/info">https://dynamic.lunanode.com/info</a>.
-							<br />If using two or more coins, m.4 or m.8 is recommended.</small>
+							<br />If using two or more coins, or Lightning, use m.4, since 2 GB RAM is insufficient. If using four or more coins, use m.8.</small>
 						</div>
 					</div>
 					<div class="form-group row">
