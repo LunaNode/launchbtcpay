@@ -91,13 +91,6 @@ for coin in coins:
 		env['BTCPAYGEN_CRYPTO{}'.format(crypto_counter)] = coin
 		crypto_counter += 1
 
-# create SSH key
-subprocess.call(['ssh-keygen', '-t', 'rsa', '-f', '/root/.ssh/id_rsa_btcpay', '-q', '-P', '', '-m', 'PEM'])
-with open('/root/.ssh/id_rsa_btcpay.pub', 'r') as f:
-	btcpay_sshkey = f.read()
-with open('/root/.ssh/authorized_keys', 'a') as f:
-	f.write(btcpay_sshkey)
-
 env['BTCPAY_HOST'] = hostname
 env['NBITCOIN_NETWORK'] = network
 env['LETSENCRYPT_EMAIL'] = email
@@ -107,7 +100,6 @@ env['BTCPAYGEN_LIGHTNING'] = lightning
 env['LIGHTNING_ALIAS'] = alias
 env['BTCPAYGEN_ADDITIONAL_FRAGMENTS'] = 'opt-save-storage-s'
 env['BTCPAY_ENABLE_SSH'] = 'true'
-env['BTCPAY_HOST_SSHKEYFILE'] = '/root/.ssh/id_rsa_btcpay'
 
 for i in range(5):
 	popen = subprocess.Popen(
