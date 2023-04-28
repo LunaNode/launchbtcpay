@@ -126,7 +126,14 @@ $(document).ready(function() {
 	function updatePrice() {
 		var planOption = $('#plan').find(":selected");
 		var price = parseFloat(planOption.data('price'));
-		var storage = 60 * $('.supportedcoins:checked').length;
+		var storage = 0;
+		$('.supportedcoins:checked').each(function() {
+			if($(this).data('coin') == 'xmr') {
+				storage += 120;
+			} else {
+				storage += 60;
+			}
+		});
 		price += 0.03 * storage;
 		$('#price').val('$' + price.toFixed(2));
 	}

@@ -164,7 +164,13 @@ func main() {
 		log.Printf("[%s] creating volumes (hostname: %s, coins: %s, plan: %s)", remoteIP, hostname, coins, plan)
 		var volumeIDs []string
 		for _, coin := range coinlist {
-			volumeID, err, cleanupFunc := createVolume(apiID, apiKey, hostname, coin, "60")
+			size := "60"
+			if coin == "xmr" {
+				// Needs larger volume due to lack of pruning support.
+				size = "120"
+			}
+
+			volumeID, err, cleanupFunc := createVolume(apiID, apiKey, hostname, coin, size)
 			if err != nil {
 				cleanup()
 				errorResponse(w, r, err.Error())

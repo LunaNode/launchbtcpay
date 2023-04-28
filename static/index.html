@@ -15,8 +15,14 @@
 			<h2>Launch BTCPayServer on LunaNode</h2>
 			<div id="errorbar" class="alert alert-danger" style="display:none"></div>
 			<div id="step1" class="stepdiv">
-				<p>For one cryptocurrency with m.2 VM, the total monthly price will be $8.80. Monitor your recurring charges on the <a href="https://dynamic.lunanode.com/panel/">Dashboard</a>.</p>
-				<p>To get started, enter your <a href="https://www.lunanode.com">LunaNode</a> API key details below. You'll need to first <a href="https://dynamic.lunanode.com/panel/api">create an API key</a>.</p>
+				<p>This launcher will create a virtual machine on our platform with BTCPay pre-installed.</p>
+				<p>To get started, enter your LunaNode API key details below. If you don't have a LunaNode account yet, follow these steps:</p>
+				<ol>
+					<li>Create an account at <a href="https://www.lunanode.com/" target="_blank">lunanode.com</a>.
+					<li><a href="https://dynamic.lunanode.com/panel/billing" target="_blank">Add funds</a> to your account.</li>
+					<li><a href="https://dynamic.lunanode.com/panel/api" target="_blank">Create an API key</a> and note the API ID and key.</li>
+				</ol>
+				<p><strong>Pricing:</strong> For one cryptocurrency with m.2 VM, the total monthly price will be $8.80. Monitor your recurring charges on the <a href="https://dynamic.lunanode.com/panel/" target="_blank">Dashboard</a>.</p>
 				<form id="step1_form">
 					<div class="form-group row">
 						<label for="api_id" class="col-sm-2 col-form-label">API ID</label>
@@ -123,7 +129,7 @@
 								<option value="s.4" data-price="28">s.4</option>
 								<option value="c.1" data-price="20">c.1</option>
 							</select>
-							<small id="planHelp" class="form-text text-muted">VM plan, see <a href="https://dynamic.lunanode.com/info">https://dynamic.lunanode.com/info</a>.
+							<small id="planHelp" class="form-text text-muted">VM plan, see <a href="https://dynamic.lunanode.com/info" target="_blank">https://dynamic.lunanode.com/info</a>.
 							<br />If using two or more coins, or Lightning, use m.4, since 2 GB RAM is insufficient. If using four or more coins, use m.8.</small>
 						</div>
 					</div>
@@ -137,7 +143,7 @@
 					<div class="form-group row">
 						<label for="coins" class="col-sm-2 col-form-label">Acceleration</label>
 						<div class="col-sm-10">
-							<input type="checkbox" id="accelerate" checked /> Accelerate initial blockchain synchronization. This enables <a href="https://wiki.lunanode.com/index.php/Burstable_Resources">"Pay for Additional CPU Utilization"</a>. For example, for BTC-only synchronization, this reduces synchronization time from approximately 7 days to 2-3 days for a one-time roughly $3 cost.
+							<input type="checkbox" id="accelerate" checked /> Accelerate initial blockchain synchronization. This enables <a href="https://wiki.lunanode.com/index.php/Burstable_Resources" target="_blank">"Pay for Additional CPU Utilization"</a>. For example, for BTC-only synchronization, this reduces synchronization time from approximately 7 days to 2-3 days for a one-time roughly $3 cost.
 						</div>
 					</div>
 					<div class="form-group row">
@@ -174,7 +180,7 @@
 				</form>
 			</div>
 			<div id="step4" class="stepdiv" style="display:none">
-				<p>Your VM has launched successfully, and BTCPayServer is being setup! After about five minutes, it'll be ready at <a id="step4_hostname" href=""></a>.</p>
+				<p>Your VM has launched successfully, and BTCPayServer is being setup! After about five minutes, it'll be ready at <a id="step4_hostname" href="" target="_blank"></a>.</p>
 			</div>
 			<div id="loading" class="stepdiv" style="display:none">
 				<img src="loading.gif" width="200px" height="200px" />
