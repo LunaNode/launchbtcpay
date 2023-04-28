@@ -61,6 +61,7 @@ if 'vdc' not in mount_output:
 	for fname in os.listdir('/dev'):
 		if len(fname) == 3 and fname.startswith('vd') and fname not in ['vda', 'vdb']:
 			volumes.append(fname)
+	volumes.sort()
 	for coin in coins:
 		if coin not in coinmap or len(volumes) == 0:
 			continue
