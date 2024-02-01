@@ -12,7 +12,6 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -160,26 +159,30 @@ func main() {
 			}
 		}
 
-		// create volumes
-		coinlist := strings.Split(coins, ",")
-		log.Printf("[%s] creating volumes (hostname: %s, coins: %s, plan: %s)", remoteIP, hostname, coins, plan)
-		var volumeIDs []string
-		for _, coin := range coinlist {
-			size := "60"
-			if coin == "xmr" {
-				// Needs larger volume due to lack of pruning support.
-				size = "120"
-			}
+		// compute volume size based on selected cryptocurrencies
+       coinlist := strings.Split(coins, ",")
+       log.Printf("[%s] creating volumes (hostname: %s, coins: %s, plan: %s)", remoteIP, hostname, coins, plan)
+       volumeSize := 20
+       for _, coin := range coinlist {
+		   if coin == "xmr" {
+			   volumeSize += 120
+		   } else if coin == "btc" {
+			   // need extra 20 GB due to large chainstate size now
+			   volumeSize += 80
+		   } else {
+			   volumeSize += 60
+		   }
+	   }
 
-			volumeID, err, cleanupFunc := createVolume(apiID, apiKey, hostname, coin, size)
-			if err != nil {
-				cleanup()
-				errorResponse(w, r, err.Error())
-				return
-			}
-			cleanupFuncs = append(cleanupFuncs, cleanupFunc)
-			volumeIDs = append(volumeIDs, volumeID)
+		// create volume
+		log.Printf("[%s] creating volume (hostname: %s, coins: %s, plan: %s, volume size: %d)", remoteIP, hostname, coins, plan, volumeSize)
+		volumeID, err, cleanupFunc := createVolume(apiID, apiKey, hostname, volumeSize)
+		if err != nil {
+			cleanup()
+			errorResponse(w, r, err.Error())
+			return
 		}
+		cleanupFuncs = append(cleanupFuncs, cleanupFunc)
 
 		// create DNS if desired
 		if strings.HasSuffix(hostname, ".lndyn.com") && strings.HasPrefix(hostname, "btcpay") && len(hostname) == 22 {
@@ -209,7 +212,8 @@ func main() {
 		params := map[string]string{
 			"region": "toronto",
 			"plan_id": plan,
-			"image_id": strconv.Itoa(IMAGE_ID),
+			"volume_id": volumeID,
+			"volume_virtio": "yes",
 			"ip": ip,
 			"hostname": hostname,
 		}
@@ -316,15 +320,6 @@ func main() {
 			cleanup()
 			errorResponse(w, r, "timed out waiting for VM creation")
 			return
-		}
-
-		// attach volumes
-		for _, volumeID := range volumeIDs {
-			request(apiID, apiKey, "volume", "attach", map[string]string{
-				"vm_id": vmResponse.VmID,
-				"volume_id": volumeID,
-				"target": "/dev/vda",
-			}, nil)
 		}
 
 		// enable charge_for_cpu if desired
@@ -451,12 +446,13 @@ func getFreeFloatingIP(apiID string, apiKey string, region string) (string, erro
 	return "", nil
 }
 
-func createVolume(apiID string, apiKey string, hostname string, coin string, size string) (string, error, func()) {
+func createVolume(apiID string, apiKey string, hostname string, size int) (string, error, func()) {
 	var createResponse LunaVolumeCreate
 	err := request(apiID, apiKey, "volume", "create", map[string]string{
 		"region": "toronto",
-		"label": fmt.Sprintf("%s-%s", hostname, coin),
-		"size": size,
+		"label": fmt.Sprintf("%s-root", hostname),
+		"size": fmt.Sprintf("%d", size),
+		"image": fmt.Sprintf("%d", IMAGE_ID),
 	}, &createResponse)
 	if err != nil {
 		return "", err, nil
@@ -468,7 +464,7 @@ func createVolume(apiID string, apiKey string, hostname string, coin string, siz
 	}
 
 	done := false
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 200; i++ {
 		time.Sleep(2*time.Second)
 		var infoResponse LunaVolumeInfo
 		err := request(apiID, apiKey, "volume", "info", map[string]string{

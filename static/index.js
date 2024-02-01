@@ -130,6 +130,8 @@ $(document).ready(function() {
 		$('.supportedcoins:checked').each(function() {
 			if($(this).data('coin') == 'xmr') {
 				storage += 120;
+			} else if($(this).data('coin') == 'btc') {
+				storage += 80;
 			} else {
 				storage += 60;
 			}
