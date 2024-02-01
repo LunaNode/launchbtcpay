@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -243,7 +244,7 @@ func main() {
 			if foundID == "" {
 				var keyResponse LunaSshkeyAdd
 				err := request(apiID, apiKey, "sshkey", "add", map[string]string{
-					"label": "tmp",
+					"label": fmt.Sprintf("tmp-%d", rand.Intn(100000)),
 					"sshkey": sshKey,
 				}, &keyResponse)
 				if err != nil {
