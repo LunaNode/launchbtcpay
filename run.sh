@@ -86,6 +86,15 @@ if 'vdc' not in mount_output:
 		if coin == 'xmr':
 			subprocess.call(['chmod', '-R', '777', '/var/lib/docker/volumes/generated_xmr_data/'])
 
+# add swapfile
+if not os.path.exists('/swapfile'):
+	subprocess.call(['fallocate', '-l', '2G', '/swapfile'])
+	subprocess.call(['chmod', '600', '/swapfile'])
+	subprocess.call(['mkswap', '/swapfile'])
+	subprocess.call(['swapon', '/swapfile'])
+	with open('/etc/fstab', 'a') as f:
+		f.write("/swapfile none swap sw 0 0\n")
+
 crypto_counter = 1
 for coin in coins:
 	if coin in coinmap:
