@@ -22,7 +22,7 @@
 					<li><a href="https://dynamic.lunanode.com/panel/billing" target="_blank">Add funds</a> to your account.</li>
 					<li><a href="https://dynamic.lunanode.com/panel/api" target="_blank">Create an API key</a> and note the API ID and key.</li>
 				</ol>
-				<p><strong>Pricing:</strong> For one cryptocurrency with m.2 VM, the total monthly price will be $8.80. Monitor your recurring charges on the <a href="https://dynamic.lunanode.com/panel/" target="_blank">Dashboard</a>.</p>
+				<p><strong>Pricing:</strong> For one cryptocurrency with m.4 VM, the total monthly price will be $15.80. Monitor your recurring charges on the <a href="https://dynamic.lunanode.com/panel/" target="_blank">Dashboard</a>.</p>
 				<form id="step1_form">
 					<div class="form-group row">
 						<label for="api_id" class="col-sm-2 col-form-label">API ID</label>
@@ -122,7 +122,7 @@
 						<label for="plan" class="col-sm-2 col-form-label">VM Plan</label>
 						<div class="col-sm-10">
 							<select class="form-control" id="plan">
-								<option value="m.2" data-price="7">m.2 (2 GB RAM)</option>
+								<option value="m.2" data-price="7">m.2 (2 GB RAM) (not recommended)</option>
 								<option value="m.4" selected data-price="14">m.4 (4 GB RAM)</option>
 								<option value="m.8" data-price="28">m.8 (8 GB RAM)</option>
 								<option value="s.2" data-price="14">s.2</option>
@@ -130,7 +130,7 @@
 								<option value="c.1" data-price="20">c.1</option>
 							</select>
 							<small id="planHelp" class="form-text text-muted">VM plan, see <a href="https://dynamic.lunanode.com/info" target="_blank">https://dynamic.lunanode.com/info</a>.
-							<br />If using two or more coins, or Lightning, use m.4, since 2 GB RAM is insufficient. If using four or more coins, use m.8.</small>
+							<br />m.2 is only sufficient for a small alt-coin like Litecoin or Dogecoin. For Bitcoin, use m.4. For Monero, or four or more coins, use m.8 or larger.</small>
 						</div>
 					</div>
 					<div class="form-group row">
