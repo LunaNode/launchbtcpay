@@ -2,8 +2,8 @@ package main
 
 import (
 	"bytes"
-	"crypto/sha512"
 	"crypto/hmac"
+	"crypto/sha512"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -11,8 +11,8 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"regexp"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -28,7 +28,7 @@ type GetIPResponse struct {
 	IP string `json:"ip"`
 }
 
-type NullResponse struct {}
+type NullResponse struct{}
 
 type LunaVolumeCreate struct {
 	VolumeID string `json:"volume_id"`
@@ -45,7 +45,7 @@ type LunaSshkeyAdd struct {
 }
 
 type LunaSshkeyItem struct {
-	ID string `json:"id"`
+	ID    string `json:"id"`
 	Value string `json:"value"`
 }
 
@@ -61,9 +61,9 @@ type LunaNetworkList struct {
 
 type LunaFloatingList struct {
 	IPs []struct {
-		IP string `json:"ip"`
+		IP           string `json:"ip"`
 		AttachedType string `json:"attached_type"`
-		Region string `json":region"`
+		Region       string `json":region"`
 	} `json:"ips"`
 }
 
@@ -72,10 +72,10 @@ type LunaVmCreate struct {
 }
 
 type LunaDynList struct {
-	Dyns map[string]struct{
-		ID string `json:"id"`
+	Dyns map[string]struct {
+		ID   string `json:"id"`
 		Name string `json:"name"`
-		IP string `json:"ip"`
+		IP   string `json:"ip"`
 	} `json:"dyns"`
 }
 
@@ -191,7 +191,7 @@ func main() {
 		if strings.HasSuffix(hostname, ".lndyn.com") && strings.HasPrefix(hostname, "btcpay") && len(hostname) == 22 {
 			err := request(apiID, apiKey, "dns", "dyn-add", map[string]string{
 				"name": strings.Split(hostname, ".")[0],
-				"ip": ip,
+				"ip":   ip,
 			}, nil)
 			if err != nil {
 				cleanup()
@@ -213,10 +213,10 @@ func main() {
 		}
 
 		params := map[string]string{
-			"region": "toronto",
-			"plan_id": plan,
+			"region":   "toronto",
+			"plan_id":  plan,
 			"image_id": strconv.Itoa(IMAGE_ID),
-			"ip": ip,
+			"ip":       ip,
 			"hostname": hostname,
 		}
 
@@ -230,7 +230,7 @@ func main() {
 			err := request(apiID, apiKey, "sshkey", "list", nil, &listResponse)
 			if err != nil {
 				cleanup()
-				errorResponse(w, r, "error listing SSH keys: " + err.Error())
+				errorResponse(w, r, "error listing SSH keys: "+err.Error())
 				return
 			}
 			var foundID string
@@ -250,12 +250,12 @@ func main() {
 			if foundID == "" {
 				var keyResponse LunaSshkeyAdd
 				err := request(apiID, apiKey, "sshkey", "add", map[string]string{
-					"label": fmt.Sprintf("tmp-%d", rand.Intn(100000)),
+					"label":  fmt.Sprintf("tmp-%d", rand.Intn(100000)),
 					"sshkey": sshKey,
 				}, &keyResponse)
 				if err != nil {
 					cleanup()
-					errorResponse(w, r, "error adding SSH key: " + err.Error())
+					errorResponse(w, r, "error adding SSH key: "+err.Error())
 					return
 				}
 				foundID = keyResponse.KeyID
@@ -269,12 +269,12 @@ func main() {
 		// add startup script
 		var scriptResponse LunaScriptCreate
 		err = request(apiID, apiKey, "script", "create", map[string]string{
-			"name": "tmp-btcpayserver",
+			"name":    "tmp-btcpayserver",
 			"content": myscript,
 		}, &scriptResponse)
 		if err != nil {
 			cleanup()
-			errorResponse(w, r, "error creating startup script: " + err.Error())
+			errorResponse(w, r, "error creating startup script: "+err.Error())
 			return
 		}
 		params["scripts"] = scriptResponse.ScriptID
@@ -298,19 +298,19 @@ func main() {
 		err = request(apiID, apiKey, "vm", "create", params, &vmResponse)
 		if err != nil {
 			cleanup()
-			errorResponse(w, r, "error creating VM: " + err.Error())
+			errorResponse(w, r, "error creating VM: "+err.Error())
 			return
 		}
 		done := false
 		for i := 0; i < 10; i++ {
-			time.Sleep(5*time.Second)
+			time.Sleep(5 * time.Second)
 			var infoResponse LunaVmInfo
 			err := request(apiID, apiKey, "vm", "info", map[string]string{
 				"vm_id": vmResponse.VmID,
 			}, &infoResponse)
 			if err != nil {
 				cleanup()
-				errorResponse(w, r, "error waiting for VM: " + err.Error())
+				errorResponse(w, r, "error waiting for VM: "+err.Error())
 				return
 			}
 			if infoResponse.Info.Status == "Online" {
@@ -327,17 +327,17 @@ func main() {
 		// attach volumes
 		for _, volumeID := range volumeIDs {
 			request(apiID, apiKey, "volume", "attach", map[string]string{
-				"vm_id": vmResponse.VmID,
+				"vm_id":     vmResponse.VmID,
 				"volume_id": volumeID,
-				"target": "/dev/vda",
+				"target":    "/dev/vda",
 			}, nil)
 		}
 
 		// enable charge_for_cpu if desired
 		if accelerate == "yes" {
 			request(apiID, apiKey, "vm", "set-fairshare", map[string]string{
-				"vm_id": vmResponse.VmID,
-				"charge_for_cpu": "yes",
+				"vm_id":            vmResponse.VmID,
+				"charge_for_cpu":   "yes",
 				"fairshare_nolend": "no",
 			}, nil)
 		}
@@ -461,8 +461,8 @@ func createVolume(apiID string, apiKey string, hostname string, coin string, siz
 	var createResponse LunaVolumeCreate
 	err := request(apiID, apiKey, "volume", "create", map[string]string{
 		"region": "toronto",
-		"label": fmt.Sprintf("%s-%s", hostname, coin),
-		"size": size,
+		"label":  fmt.Sprintf("%s-%s", hostname, coin),
+		"size":   size,
 	}, &createResponse)
 	if err != nil {
 		return "", err, nil
@@ -475,7 +475,7 @@ func createVolume(apiID string, apiKey string, hostname string, coin string, siz
 
 	done := false
 	for i := 0; i < 10; i++ {
-		time.Sleep(2*time.Second)
+		time.Sleep(2 * time.Second)
 		var infoResponse LunaVolumeInfo
 		err := request(apiID, apiKey, "volume", "info", map[string]string{
 			"volume_id": createResponse.VolumeID,
@@ -497,7 +497,7 @@ func createVolume(apiID string, apiKey string, hostname string, coin string, siz
 }
 
 var fqdnPattern = regexp.MustCompile(
-	`^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$`,
+	`^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$`,
 )
 
 func isValidFQDN(hostname string) bool {
