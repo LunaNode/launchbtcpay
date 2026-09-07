@@ -11,6 +11,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"regexp"
 	"net/url"
 	"strconv"
 	"strings"
@@ -129,7 +130,12 @@ func main() {
 		apiID := r.PostForm.Get("api_id")
 		apiKey := r.PostForm.Get("api_key")
 		ip := r.PostForm.Get("ip")
-		hostname := r.PostForm.Get("hostname")
+		hostname := strings.ToLower(strings.TrimSpace(r.PostForm.Get("hostname")))
+		hostname = strings.TrimSuffix(hostname, ".")
+		if !isValidFQDN(hostname) {
+			errorResponse(w, r, "invalid hostname: must be a valid fully qualified domain name")
+			return
+		}
 		sshKey := r.PostForm.Get("sshkey")
 		email := r.PostForm.Get("email")
 		network := r.PostForm.Get("network")
@@ -488,4 +494,12 @@ func createVolume(apiID string, apiKey string, hostname string, coin string, siz
 		return "", fmt.Errorf("timed out waiting for volume creation"), nil
 	}
 	return createResponse.VolumeID, nil, cleanup
+}
+
+var fqdnPattern = regexp.MustCompile(
+	`^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$`,
+)
+
+func isValidFQDN(hostname string) bool {
+	return fqdnPattern.MatchString(hostname)
 }
