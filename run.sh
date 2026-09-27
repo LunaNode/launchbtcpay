@@ -45,6 +45,12 @@ coinmapTestnet = {
 	'dash': '/var/lib/docker/volumes/generated_dash_datadir/_data/testnet3/blocks/',
 	'xmr': '/var/lib/docker/volumes/generated_xmr_data-1/_data/testnet3/x/',
 }
+bitcoinBlockPaths = {
+	'mainnet': coinmap['btc'],
+	'testnet': coinmapTestnet['btc'],
+	'signet': '/var/lib/docker/volumes/generated_bitcoin_datadir/_data/signet/blocks',
+	'regtest': '/var/lib/docker/volumes/generated_bitcoin_datadir/_data/regtest/blocks',
+}
 
 # clone btcpayserver-docker
 if not os.path.exists('/root/btcpayserver-docker'):
@@ -67,7 +73,9 @@ if 'vdc' not in mount_output:
 			continue
 		volume = '/dev/' + volumes[0]
 		volumes = volumes[1:]
-		if network == 'testnet':
+		if coin == 'btc':
+			path = bitcoinBlockPaths[network]
+		elif network == 'testnet':
 			path = coinmapTestnet[coin]
 		else:
 			path = coinmap[coin]
