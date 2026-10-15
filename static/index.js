@@ -134,7 +134,7 @@ $(document).ready(function() {
 				storage += 60;
 			}
 		});
-		price += 0.03 * storage;
+		price += 0.06 * storage;
 		$('#price').val('$' + price.toFixed(2));
 	}
 
